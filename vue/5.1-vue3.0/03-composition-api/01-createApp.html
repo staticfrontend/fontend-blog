@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+    x: {{ x }} <br>
+    y: {{ y }}
+  </div>
+  <script type="module">
+    /*
+    * Compositino API
+        Vue3新增的，依然可以使用Options API
+    * createApp：创建一个vue对象，接受一个选项作为参数，也就是组件的选项，可以传入methods，data，computed等；返回一个实例对象，比vue2中的实例对象vm少很多
+        成员，并且没有使用$开头
+    * 使用Composition API：
+        setup() 函数是Composition API的入口
+    * setup：setUp有两个参数
+        第一个参数 props，props是一个响应式对象不能被解构
+        第二个参数 context，context有三个成员，分别是attrs、emit、slots
+        setup需要返回一个对象，返回的对象可以用在模版，methods，computed，生命周期函数中
+        setup执行时机是在props被解析完毕，但是在组件实例被创建之前执行，所以在setup里无法通过this获取到组件实例，组件实例还未被创建，所以在setup里也无法获取到组件的data，methods等
+    * reactive: 
+        定义一个对象为响应式对象，并且该对象的嵌套属性也都是响应式对象，返回值为一个代理对象
+    * 生命周期钩子函数：
+        在setup中也可以使用生命周期钩子函数，和Options API区别就是在对应生命周期钩子函数名称前加上on，比如Options API里面写法为mounted，Composition API写法则为
+        onMounted，Composition API少了beforeCreate和created对应的生命周期钩子函数
+    * toRefs：
+        reactive定义的对象返回值是一个代理对象，当把代理对象解构后，就相当于赋值，赋值后的值和代理对象无关，无法成为响应式的值；
+        toRefs可以把一个响应式代理对象的属性也转换为响应式的，就可以解决上面reactive对象解构赋值的问题
+    **/
+    import { createApp, reactive, onMounted, onUnmounted, toRefs } from './node_modules/vue/dist/vue.esm-browser.js'
+
+    // 获取鼠标位置的代码可以写在一个函数中，在setup使用，方便服用
+    function useMousePosition () {
+      const position = reactive({
+        x: 0,
+        y: 0
+      })
+
+      const update = e => {
+        position.x = e.pageX
+        position.y = e.pageY
+      }
+
+      onMounted(() => {
+        window.addEventListener('mousemove', update)
+      })
+
+      onUnmounted(() => {
+        window.removeEventListener('mousemove', update)
+      })
+
+      // return position
+      // toRefs可以把一个响应式代理对象的属性也转换为响应式的，解决代理对象解构赋值问题
+      return toRefs(position)
+    }
+
+    const app = createApp({
+      /*
+      data() {
+        return { x, y }
+      },
+      */
+      /*
+      // 1.用setup来替代data
+      setup() {
+        // reactive定义响应式
+        const position = reactive({
+          x: 0,
+          y: 0
+        })
+        return position
+      },
+      mounted () {
+        this.x = 100
+      }
+      */
+
+      // 2.setup提取获取鼠标位置公共方法
+      setup () {
+        // const position = useMousePosition()
+        const { x, y } = useMousePosition()
+        // setup返回的对象用在模版中
+        return {
+          x,
+          y
+        }
+      }
+    })
+    console.log(app)
+
+    app.mount('#app')
+  </script>
+</body>
+</html>

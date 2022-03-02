@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    /** Proxy的基本使用
+      * receiver代表当前的Proxy对象或者继承Proxy的对象
+      * 在设置值或者获取值的时候，使用Reflect.get和Reflect.set；Reflect 为ES6中新增的成员，Reflect为反射的意思，在代码运行期间用来获取或设置对象中的成员
+      * ES6中，建议Reflect用来统一和替代Object的一些方法的操作，也就是用Reflect来统一对象的操作
+      * Reflect的get/set/deleteProperty 操作成功则返回true，操作失败则返回false，在严格模式下，如果返回 false 的话会出现 Type Error 的异常
+    **/
+    
+    /**
+      'use strict'
+      // 问题1：set 和 deleteProperty 中需要返回布尔类型的值
+      //        在严格模式下，如果返回 false 的话会出现 Type Error 的异常
+      const target = {
+        foo: 'xxx',
+        bar: 'yyy'
+      }
+
+      const proxy = new Proxy(target, {
+        // 监听对属性的访问
+        get (target, key, receiver) {
+          // return target[key] // 用Reflect来统一对象的操作
+          return Reflect.get(target, key, receiver)
+        },
+        // 监听对属性的赋值 需要返回布尔类型的值
+        set (target, key, value, receiver) {
+          // target[key] = value
+          return Reflect.set(target, key, value, receiver)
+        },
+        // 监听对属性的删除 需要返回布尔类型的值
+        deleteProperty (target, key) {
+          // delete target[key]
+          return Reflect.deleteProperty(target, key)
+        }
+      })
+
+      proxy.foo = 'zzz'
+      // delete proxy.foo
+    **/
+
+    // 问题2：Proxy 和 Reflect 中使用的 receiver
+
+    // Proxy 中 receiver：在Proxy的handle的get和set中，会接收一个receiver， receiver为当前创建的Proxy对象（为代理对象，也就是new Proxy的返回值） 或者继承 Proxy 的子对象
+    // Reflect中调用get和set时，也传入了一个receiver对象
+    // Reflect 中 receiver：如果 target 对象中设置了 getter，getter 中的 this 指向 Proxy 中的receiver
+
+    const obj = {
+      get foo() {
+        console.log('this指向', this) // this 指向 proxy => Proxy {}
+        return this.bar
+      }
+    }
+
+    const proxy = new Proxy(obj, {
+      get (target, key, receiver) {
+        if (key === 'bar') { 
+          return 'value - bar' 
+        }
+        // return Reflect.get(target, key) // 如果不传入receiver，则上面obj的get里的this指向obj自己
+        return Reflect.get(target, key, receiver) // 传入receiver，则上面obj的get里的this指向 proxy代理对象
+      }
+    })
+    console.log('proxy代理对象', proxy)
+    console.log(proxy.foo)
+  </script>
+</body>
+</html>

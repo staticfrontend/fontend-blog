@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+    <button @click="increase">increase</button>
+    <button @click="stop">stop</button>
+    <br>
+    {{ count }}
+  </div>
+
+  <script type="module">
+    /**
+      * watchEffect
+          watch函数的简化版本，也用来监听数据的变化
+          接受一个函数作为参数，监听函数内响应式数据的变化
+          初始化的时候就会执行一次
+          返回值为取消监听的函数，调用返回值后watchEffect不会再监听内部函数的值是否变化
+     **/
+    import { createApp, ref, watchEffect } from './node_modules/vue/dist/vue.esm-browser.js'
+
+    createApp({
+      setup () {
+        const count = ref(0)
+        const stop = watchEffect(() => {
+          console.log(count.value)
+        })
+
+        return {
+          count,
+          stop,
+          increase: () => {
+            count.value++
+          }
+        }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

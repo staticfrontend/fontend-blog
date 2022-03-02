@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+    <button @click="push">按钮</button>
+    未完成：{{ activeCount }}
+  </div>
+  <script type="module">
+    /**
+      * 计算属性computed
+      * 第一种用法：
+        computed(() => count.value + 1)
+          传入一个获取值的函数，函数内部依赖响应式的数据，当依赖的数据发生变化，会重新执行该函数获取数据；
+          computed函数返回一个不可变的响应式对象，类似于使用ref创建的对象，只有一个value属性；
+          获取计算属性的值则通过value属性来获取，模板中使用计算属性可省略value
+          
+      * 第二种用法：传入一个对象，这个对象具有getter和setter
+          const count = ref(0)
+          const plusOne = computed({
+            get: () => count.value + 1,
+            set: val => count.value = val -1
+          })
+    **/
+    import { createApp, reactive, computed } from './node_modules/vue/dist/vue.esm-browser.js'
+    const data = [
+      { text: '看书', completed: false },
+      { text: '敲代码', completed: false },
+      { text: '约会', completed: true }
+    ]
+
+    createApp({
+      setup () {
+        const todos = reactive(data)
+
+        // computed创建一个响应式数据，这个响应式数据依赖传入函数里其他响应式数据
+        const activeCount = computed(() => {
+          return todos.filter(item => !item.completed).length
+        })
+
+        return {
+          activeCount,
+          push: () => {
+            todos.push({
+              text: '开会',
+              completed: false
+            })
+          }
+        }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

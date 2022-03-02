@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- script不设置defer -->
+  <!-- <script src="./modules/index.js"></script> -->
+  <!-- script设置defer -->
+  <script defer src="./modules/index.js"></script>
+  <!-- type="module"和设置defer效果一样 -->
+  <!-- <script type="module" src="./modules/index.js"></script> -->
+</head>
+<body>
+  <div id="app">Hello World</div>
+  <div>
+    <h2>ES Module</h2>
+    <h3>现代浏览器都支持 ES Module（IE 不支持）</h3>
+    <h3>
+      通过script type="module"加载模块
+    </h3>
+    <h3>支持script type="module"模块的 script 默认延迟加载</h3>
+    <p>* 类似于 script 标签设置 defer</p>
+    <p>* script 标签设置 defer 的js会在html内容解析后，DOMContentLoaded 事件触发前下载执行</p>
+    <p>打开浏览器查看该demo结果</p>
+  </div>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      console.log('DOMContentLoaded')
+    })
+
+  </script>
+  
+</body>
+</html>

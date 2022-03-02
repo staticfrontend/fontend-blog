@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+    <button @click="increase">按钮</button>
+    <span>{{ count }}</span>
+  </div>
+  <script type="module">
+    /**
+      * 响应式API ref
+          ref把普通数据转成响应式数据，和reactive不同的是，reactive把一个对象转化为响应式对象，ref把基本类型的数据包装成响应式对象
+          ref()的返回值为一个使用value属性的对象，该对象的value属性具有getter和setter
+    **/
+    import { createApp, ref } from './node_modules/vue/dist/vue.esm-browser.js'
+    
+    function useCount () {
+      // 把数字0定义成响应式对象
+      const count = ref(0)
+      return {
+        // 模板中使用count可以省略value属性，即count.value可直接count
+        count,
+        // 返回的incrincease方法相当于methods里的方法
+        incrincease: () => {
+          count.value++
+        }
+      }
+    }
+
+    createApp({
+      setup () {
+        return {
+          ...useCount()
+        }        
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>
