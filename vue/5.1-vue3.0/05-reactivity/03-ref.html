@@ -6,6 +6,18 @@
   <title>Document</title>
 </head>
 <body>
+  <!-- <script type="module">
+    import { reactive, effect, ref } from './reactivity/index.js'
+
+    const price = ref(5000)
+   
+    console.log(price.value)
+
+    // ref 创建的响应式对象，通过value设置值
+    price.value = 4000
+    console.log(price.value)
+
+  </script> -->
   <script type="module">
     import { reactive, effect, ref } from './reactivity/index.js'
 
@@ -14,10 +26,12 @@
    
     let total = 0 
     effect(() => {
+      // ref 创建的响应式对象，通过value获取值
       total = price.value * count.value
     })
     console.log(total)
 
+    // ref 创建的响应式对象，通过value设置值
     price.value = 4000
     console.log(total)
 

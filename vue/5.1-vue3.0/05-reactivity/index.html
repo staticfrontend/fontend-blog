@@ -9,12 +9,19 @@
   <script type="module">
     import { reactive } from './reactivity/index.js'
     const obj = reactive({
-      name: 'zs',
+      name: {
+        tgInfo: {
+          tgName: {
+            name: '111'
+          }
+        }
+      },
       age: 18
     })
     obj.name = 'lisi'
     delete obj.age
-    console.log(obj)
+    // console.log(obj)
+    console.log(obj.name)
   </script>
 </body>
 </html>

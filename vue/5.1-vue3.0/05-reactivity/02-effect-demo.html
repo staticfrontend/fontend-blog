@@ -7,6 +7,10 @@
 </head>
 <body>
   <script type="module">
+    /**
+     * effect和watchEffect用法一样，watchEffect内部调用effect来实现的
+     * effect中的函数首先会执行一次，如果函数中的响应式数据发生变化，该函数会执行
+     **/
     import { reactive, effect } from './reactivity/index.js'
 
     const product = reactive({
