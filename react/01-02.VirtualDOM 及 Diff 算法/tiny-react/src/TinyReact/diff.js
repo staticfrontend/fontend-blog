@@ -7,7 +7,7 @@ import diffComponent from "./diffComponent"
 
 export default function diff(virtualDOM, container, oldDOM) {
   const oldVirtualDOM = oldDOM && oldDOM._virtualDOM
-  const oldComponent = oldVirtualDOM && oldVirtualDOM.component
+  const oldComponent = oldVirtualDOM && oldVirtualDOM.component // 旧组件实例
   // 判断 oldDOM 是否存在
   if (!oldDOM) {
     mountElement(virtualDOM, container)
@@ -23,7 +23,7 @@ export default function diff(virtualDOM, container, oldDOM) {
     // 使用新的 DOM 对象替换旧的 DOM 对象
     oldDOM.parentNode.replaceChild(newElement, oldDOM)
   } else if (typeof virtualDOM.type === "function") {
-    // 组件
+    // 类型是组件，比对组件更新
     diffComponent(virtualDOM, oldComponent, oldDOM, container)
   } else if (oldVirtualDOM && virtualDOM.type === oldVirtualDOM.type) {
     if (virtualDOM.type === "text") {

@@ -10,9 +10,14 @@
       • mountComponent负责渲染函数组件和类组件：函数组件和类组件都在virtualDOM.type上，
         函数组件直接调用virtualDom.type()拿到virtualDom然后使用mountNativeElement渲染；
         类组件new virtrualDom.type()然后调用实例的render()拿到virtualDom然后使用mountNativeElement渲染；
-    3. React.Component的实现：
+    3. React.Component的和setState实现：
       • 在Component里的constructor(props){ this.props = props }，接收子类super(props)传递过来的props放到this上，这样子类就可以直接使用this.props了
-      
+      • setState实现类组件更新：
+          1-在Component中，定义setState(state){ this.state = Object.assign({}, this.state, state) } 接收子组件传递过来的state
+          2-在子组件调用this.setState时候，将传递的state和原有的this.state进行合并，改变this.state也就是改变子类的this.state(在子类中调用this.setState，this此时指向子类实例)
+          3-在setState，重新触发this.render方法，获取渲染的新的virtualDOM 对象
+          4-diff(virtualDOM, container, oldDOM) 将新的vitrualDom和旧的进行diff比对，更新组件
+    4. Diff算法：react中的diff算法和vue中的类似
  */
 
 import createElement from "./createElement"

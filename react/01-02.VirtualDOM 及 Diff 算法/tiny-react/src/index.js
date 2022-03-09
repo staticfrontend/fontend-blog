@@ -2,6 +2,7 @@ import TinyReact from "./TinyReact"
 
 const root = document.getElementById("root")
 
+// virtual dom 实现
 const virtualDOM = (
   <div className="container">
     <h1>你好 Tiny React</h1>
@@ -21,6 +22,7 @@ const virtualDOM = (
 )
 console.log(virtualDOM)
 
+// dom diff 实现
 const modifyDOM = (
   <div className="container">
     <h1>你好 Tiny React</h1>
@@ -39,9 +41,11 @@ const modifyDOM = (
   </div>
 )
 
+// render实现
 TinyReact.render(virtualDOM, root)
 
 setTimeout(() => {
+  // dom diff
   TinyReact.render(modifyDOM, root)
 }, 2000)
 
@@ -60,6 +64,7 @@ function Heart(props) {
 
 // TinyReact.render(<Heart title="Hello React" />, root)
 
+// setState实现
 class Alert extends TinyReact.Component {
   constructor(props) {
     // 使用super(props)将props传递给父类Component
@@ -95,6 +100,7 @@ class Alert extends TinyReact.Component {
   }
 }
 
+// 判断渲染的是不是同一个组件
 // TinyReact.render(<Alert name="张三" age={20} />, root)
 
 // setTimeout(() => {
