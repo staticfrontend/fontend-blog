@@ -1112,12 +1112,18 @@ key 属性不需要全局唯一，但是在同一个父节点下的兄弟节点�
 
 #### 11.1 节点对比
 
-实现思路是在两个元素进行比对时，如果类型相同，就循环旧的 DOM 对象的子元素，查看其身上是否有key 属性，如果有就将这个子元素的 DOM 对象存储在一个 JavaScript 对象中，接着循环要渲染的 Virtual DOM 对象的子元素，在循环过程中获取到这个子元素的 key 属性，然后使用这个 key 属性到 JavaScript 对象中查找 DOM 对象，如果能够找到就说明这个元素是已经存在的，是不需要重新渲染的。如果通过key属性找不到这个元素，就说明这个元素是新增的是需要渲染的。
+实现思路是在两个元素进行比对时，如果类型相同，就循环旧的 DOM 对象的子元素，查看其身上是否有key 属性，如果有就将这个子元素的 DOM 对象存储在一个 JavaScript 对象中；
+
+接着循环新的 Virtual DOM 对象的子元素，在循环过程中获取到这个子元素的 key 属性，然后使用这个 key 属性到 这个JavaScript 对象中查找 DOM 对象；
+
+如果能够找到就说明这个元素是已经存在的，是不需要重新渲染的；
+
+如果通过key属性找不到这个元素，就说明这个元素是新增的是需要渲染的。
 
 ```react
 // diff.js
 else if (oldVirtualDOM && virtualDOM.type === oldVirtualDOM.type) {
-  // 将拥有key属性的元素放入 keyedElements 对象中
+  // 将旧的 DOM 对象的拥有key属性的子元素放入 keyedElements 对象中
   let keyedElements = {}
   for (let i = 0, len = oldDOM.childNodes.length; i < len; i++) {
     let domElement = oldDOM.childNodes[i]

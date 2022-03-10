@@ -34,7 +34,7 @@ export default function diff(virtualDOM, container, oldDOM) {
       updateNodeElement(oldDOM, virtualDOM, oldVirtualDOM)
     }
 
-    // 1. 将拥有key属性的子元素放置在一个单独的对象中
+    // 1. 将旧的 DOM 对象的拥有key属性的子元素放入 keyedElements 对象中
     let keyedElements = {}
     for (let i = 0, len = oldDOM.childNodes.length; i < len; i++) {
       let domElement = oldDOM.childNodes[i]
@@ -49,7 +49,7 @@ export default function diff(virtualDOM, container, oldDOM) {
     let hasNoKey = Object.keys(keyedElements).length === 0
 
     if (hasNoKey) {
-      // 对比子节点
+      // 如果旧的 DOM 没有key属性，则直接对比子节点内容
       virtualDOM.children.forEach((child, i) => {
         diff(child, oldDOM, oldDOM.childNodes[i])
       })

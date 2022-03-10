@@ -24,6 +24,7 @@ export default function mountComponent(virtualDOM, container, oldDOM) {
   }
   if (component) {
     component.componentDidMount()
+    // ref如果是放在组件上，在组件实例化后，调用ref方法传入组件实例
     if (component.props && component.props.ref) {
       component.props.ref(component)
     }

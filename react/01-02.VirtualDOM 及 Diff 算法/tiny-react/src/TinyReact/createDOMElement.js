@@ -22,6 +22,7 @@ export default function createDOMElement(virtualDOM) {
     mountElement(child, newElement)
   })
 
+  // ref如果是放在节点属性上，调用节点上的ref方法，并且把当前节点作为参数传递给ref
   if (virtualDOM.props && virtualDOM.props.ref) {
     virtualDOM.props.ref(newElement)
   }

@@ -17,7 +17,25 @@
           2-在子组件调用this.setState时候，将传递的state和原有的this.state进行合并，改变this.state也就是改变子类的this.state(在子类中调用this.setState，this此时指向子类实例)
           3-在setState，重新触发this.render方法，获取渲染的新的virtualDOM 对象
           4-diff(virtualDOM, container, oldDOM) 将新的vitrualDom和旧的进行diff比对，更新组件
+      • 生命周期函数在这里面定义
+        shouldComponentUpdate(nextProps, nextState) {
+          return nextProps != this.props || nextState != this.state
+        }
+        shouldComponentUpdate生命周期函数里面会比对nextProps和this.props或者nextState和this.state是否相等
     4. Diff算法：react中的diff算法和vue中的类似
+      • 普通虚拟dom的对比和vue中dom-diff对比类似（也就是组件内dom-diff）
+      • 如果typeof virturlDom.type === 'funciton'是组件，则进行组件的比对diffComponent
+          1-组件更新，更新组件和旧组件是同一个组件的情况. 做组件更新操作；不是同一个组件，用mountElement渲染新的组件，移除旧的组件
+          2-组件更新操作：组件更新在updateComponent(virtualDOM,oldComponent,oldDOM,container)函数中
+            2-01-在oldComponent.shouldComponentUpdate(virtualDOM.props)传入新组件的props；
+            2-02-shouldComponentUpdate会将传入的新旧props进行比对，返回布尔值，如果是true，则updateProps(virtualDOM.props)并调用oldComponent.render()，然后diff比对更新；
+            2-03-更新后会调用oldComponent.componentDidUpdate(prevProps)生命周期函数
+    5. ref的原理：
+      • ref如果是放在组件上，在组件实例化后，调用ref方法传入组件实例
+      • ref如果是放在节点属性上，调用节点上的ref方法，传入当前真实dom节点
+    6. key的作用：key 属性就是数据的唯一标识，帮助 React 识别哪些数据被修改或者删除了
+      
+        
  */
 
 import createElement from "./createElement"

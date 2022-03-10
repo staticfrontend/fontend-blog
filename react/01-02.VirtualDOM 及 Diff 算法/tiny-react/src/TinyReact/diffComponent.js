@@ -11,7 +11,7 @@ export default function diffComponent(
   container
 ) {
   if (isSameComponent(virtualDOM, oldComponent)) {
-    // 组件更新更新组件和旧组件是同一个组件的情况. 做组件更新操作
+    // 组件更新，更新组件和旧组件是同一个组件的情况. 做组件更新操作
     updateComponent(virtualDOM, oldComponent, oldDOM, container)
   } else {
     // 不是同一个组件，用mountElement渲染新的组件，移除oldDOM对应的组件
