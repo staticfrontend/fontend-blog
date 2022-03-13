@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #box {
+        padding: 20px;
+        background: palegoldenrod;
+      }
+    </style>
+  </head>
+  <body>
+    <h5>页面中有三个按钮和一个DIV，点击第一个按钮执行一项昂贵的计算，使其长期占用主线程，当计算任务执行的时候去点击第三个按钮更改页面中 DIV 的背景颜色会严重卡顿</h5>
+    <h5>点击第二个按钮是优化后的版本，不会造成点击第三个按钮更改页面中 DIV 的背景颜色卡顿</h5>
+    <div id="box"></div>
+    <button id="btn1">执行计算长任务</button>
+    <button id="btn2">执行优化后的计算任务</button>
+    <button id="btn3">更改背景颜色</button>
+    <script>
+      var box = document.getElementById("box")
+      var btn1 = document.getElementById("btn1")
+      var btn2 = document.getElementById("btn2")
+      var btn3 = document.getElementById("btn3")
+      var number = 999999
+      var value = 0
+
+      // 计算任务为长任务，占用了主线程，再执行其他任务会卡顿
+      function longCalc() {
+        while (number > 0) {
+          // 做计算
+          value = Math.random() < 0.5 ? Math.random() : Math.random()
+          console.log(value)
+          number--
+        }
+      }
+
+      // 使用 requestIdleCallback 优化长任务就可以完美解决这个卡顿问题
+      function calc(deadline) {
+        // deadline.timeRemaining() 用来获取浏览器的空余时间，如果空余时间大于1ms，就执行长任务
+        // 如果有其他任务来，则会自动中断任务，主线程先处理其他任务
+        while (number > 0 && deadline.timeRemaining() > 1) {
+          value = Math.random() < 0.5 ? Math.random() : Math.random()
+          console.log(value)
+          number--
+        }
+        // 再次调用requestIdleCallback继续执行中断任务
+        requestIdleCallback(calc)
+      }
+
+      btn1.onclick = function () {
+        longCalc()
+      }
+
+      btn2.onclick = function () {
+        requestIdleCallback(calc)
+      }
+
+      btn3.onclick = function () {
+        box.style.background = "green"
+      }
+    </script>
+  </body>
+</html>

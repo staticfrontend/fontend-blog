@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <style>
+    .box {
+      width: 20px;
+      height: 20px;
+      background: palegoldenrod;
+    }
+    .box2 {
+      width: 20px;
+      height: 20px;
+      background: red;
+    }
+  </style>
+</head>
+
+<body>
+  <h5>requestAnimationFrame的使用</h5>
+  <p>requestAnimationFrame 会把每一帧中的所有 DOM 操作集中起来，在一次重绘或回流时就完成，并且重绘或回流的时间间隔紧紧跟随浏览器的刷新频率</p>
+  <p>相比于setInterval实现动画的优点：使得动画更加流畅，防止动画失帧</p>
+  <div class="box"></div>
+  <div class="box2"></div>
+  <button class="btn1">requestAnimationFrame版本更流畅</button>
+  <button class="btn2">计时器版本会卡帧</button>
+  <script>
+    var box = document.querySelector(".box")
+    var box2 = document.querySelector(".box2")
+    var btn1 = document.querySelector(".btn1")
+    var btn2 = document.querySelector(".btn2")
+    
+    let offsetLeft = 0;
+    var run = () => {
+      offsetLeft += 5;
+      box.style.transform = `translateX(${offsetLeft}px)`;
+      var raf = window.requestAnimationFrame(run);
+
+      if (offsetLeft > 500) {
+        cancelAnimationFrame(raf);
+      }
+    };
+
+
+    var timer = null;
+    let offsetLeft2 = 0;
+    var run2 = () => {
+      timer = setInterval(() => {
+        offsetLeft2 += 5;
+        box2.style.transform = `translateX(${offsetLeft2}px)`;
+
+        if (offsetLeft2 > 500) {
+          clearInterval(timer);
+        }
+      }, 16);
+    }
+
+    btn1.onclick = function () {
+      run();
+    }
+
+    btn2.onclick = function () {
+      run2();
+    }
+    
+  </script>
+</body>
+
+</html>
