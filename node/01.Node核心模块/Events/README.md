@@ -2,13 +2,13 @@
 
 ## 1. EventEmitter
 
-#### 1.1 events与EventEmitter
+### 1.1 events与EventEmitter
 
 * nodejs是基于事件驱动的异步操作架构，内置events 模块
 
 * events 模块提供了 EventEmitter 类
 
-#### 1.2 EventEmitter 常见API
+### 1.2 EventEmitter 常见API
 
 * on: 添加当事件被触发时调用的回调函数
 
@@ -62,7 +62,7 @@ ev.off('事件3', cbFn) // 取消cbFn
 ev.emit('事件3', 1, 2, 3) // off取消cbFn后，emit不再触发
 ```
 
-#### 1.3 EventEmitter 与发布订阅模式
+### 1.3 EventEmitter 与发布订阅模式
 
 * 发布订阅模式存在调度中心，而观察者模式没有调度中心
 
@@ -76,7 +76,7 @@ ev.emit('事件3', 1, 2, 3) // off取消cbFn后，emit不再触发
 
 * 状态改变时通知所有的订阅者执行监听
 
-#### 1.4 EventEmitter 实现
+### 1.4 EventEmitter 实现
 
 ```js
 function MyEvent () {
@@ -145,3 +145,178 @@ ev.emit('事件1', '前')
 ```
 
 ## 2. Eventloop 事件环
+
+### 2.1 浏览器中的Eventloop
+
+完整的事件环执行顺序：
+
+* 执行同步代码，将宏任务和微任务放入相应的队列
+
+* 每一次宏任务同步代码执行后，执行满足条件的微任务
+
+* 微任务队列执行后，执行满足条件的宏任务异步代码
+
+* 循环事件环操作
+
+注意：宏任务队列中每执行一个宏任务后，会执行一次微任务
+
+```js
+setTimeout(() => {
+  console.log('s1')
+  Promise.resolve().then(() => {
+    console.log('p2')
+  })
+  Promise.resolve().then(() => {
+    console.log('p3')
+  })
+})
+
+Promise.resolve().then(() => {
+  console.log('p1')
+  setTimeout(() => {
+    console.log('s2')
+  })
+  setTimeout(() => {
+    console.log('s3')
+  })
+})
+```
+
+输出结果为：
+
+p1 s1 p2 p3 s2 s3
+
+### 2.2 Nodejs 中的Eventloop
+
+#### 2.1.1 Nodejs 事件循环队列
+
+事件队列的执行顺序如下：
+
+<img src="https://user-images.githubusercontent.com/23166885/187464617-864f844b-c8bf-41ac-ab6f-a6849c281aa7.png"/>
+
+6个事件队列说明：
+
+* timers： 执行setTimeout和setInterval回调
+
+* pending callbacks： 执行系统操作的回调，如tcp
+
+* idle prepare：系统内部使用
+
+* poll：I/O 相关回调
+
+* check：执行setImmediate
+
+* close callbacks：close事件的回调
+
+常用的有timers, check 事件
+
+#### 2.1.2 Nodejs Eventloop
+
+Nodejs 完整的事件环执行顺序：
+
+* 执行同步代码，将不同任务放入相应的队列
+
+* 每一次宏任务同步代码执行后，执行满足条件的微任务
+
+* 微任务队列执行后，执行满足条件的 timer 队列中满足条件的宏任务
+
+* timer 队列中宏任务执行完后，会依次按照 pending callbacks、idle prepare、poll、check、close callbacks 的顺序切换队列
+
+* 循环事件环操作
+
+注意：宏任务队列中的每一个宏任务执行完成后，才会执行一次微任务
+
+```js
+// timers 事件队列
+setTimeout(() => {
+  console.log('s1')
+})
+
+Promise.resolve().then(() => {
+  console.log('p1')
+})
+
+console.log('start')
+
+process.nextTick(() => {
+  console.log('tick')
+})
+
+// setImmediate 属于 check 事件队列
+setImmediate(() => {
+  console.log('setimmediate')
+})
+
+console.log('end')
+```
+
+输出结果为：
+
+start, end, tick, p1, s1, setimmediate
+
+### 2.3 Nodejs 与浏览器事件循环的区别
+
+* 1.任务队列数不同
+
+* 2.Nodejs 微任务执行时机不同
+
+* 3.微任务优先级不同
+
+#### 任务队列数
+
+* 浏览器中只有两个任务队列
+
+* Nodejs 中有6个事件队列
+
+#### 微任务执行时机
+
+* 两者都会在同步代码执行完毕后执行微任务
+
+* 浏览器中每一个宏任务执行完毕后就清空微任务；Nodejs 中在事件队列所有任务执行完毕后，切换时才会清空微任务
+
+#### 微任务优先级不同
+
+* 浏览器事件环中，微任务存放于事件队列，先进先出
+
+* Nodejs 中process.nextTick 先与 Promise.then
+
+```js
+setTimeout(() => {
+  // Nodejs 中在事件队列所有任务执行完毕后，切换时才会清空微任务
+  // 所以需要先把s1, s2任务执行后，才执行微任务，并且nextTick优于Promise
+  console.log('s1')
+  Promise.resolve().then(() => {
+    console.log('p1')
+  })
+  process.nextTick(() => {
+    console.log('t1')
+  })
+})
+
+Promise.resolve().then(() => {
+  console.log('p2')
+})
+
+console.log('start')
+
+setTimeout(() => {
+  console.log('s2')
+  Promise.resolve().then(() => {
+    console.log('p3')
+  })
+  process.nextTick(() => {
+    console.log('t2')
+  })
+})
+
+console.log('end')
+```
+
+nodejs 运行结果：
+
+start, end, p2, s1, s2, t1, t2, p1, p3
+
+浏览器运行结果：
+
+start, end, p2, s1, p1, t1, s2, p3, t2
+
